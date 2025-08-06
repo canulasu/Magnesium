@@ -45,9 +45,10 @@ mv magnesium bin
 cd magpack
 pyinstaller --onefile magpack.py
 rm -rf magpack.spec build
-cd source
+cd dist
 mv magpack ..
 cd ..
+rmdir dist
 mv magpack ../bin
 
 echo "Done. Results can be found in the ./bin directory"
