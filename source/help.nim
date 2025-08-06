@@ -22,6 +22,28 @@ proc helpmode*(): int =
             echo "Function: println()"
             echo "Arguments: 1"
             echo "Usage: println(arguments)"
-            echo "Accepts: Addition, variables, strings"
+            echo "Accepts: Addition, variables, strings, integers, floats"
+            echo "Description: Prints a line to the console."
+
+        elif prompt == "os.system":
+            echo "Function: os.system()"
+            echo "Arguments: 1"
+            echo "Usage: os.system(command)"
+            echo "Accepts: Addition, variables, strings, integers, floats"
+            echo "Description: Runs a command on the system shell."
+
+        elif prompt == "var":
+            echo "Keyword: var"
+            echo "Arguments: 2"
+            echo "Usage: var name = contents"
+            echo "Accepts: Addition, variables, strings, integers, floats"
+            echo "Description: Used to local declare variables."
+
+        elif prompt == "include":
+            echo "Keyword: include"
+            echo "Arguments: 1"
+            echo "Usage: include name"
+            echo "Accepts: Standard library modules or Magnesium scripts."
+            echo "Description: Used to globally import libraries or modules."
 
     return 0
