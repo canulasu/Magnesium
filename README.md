@@ -1,5 +1,7 @@
 # Magnesium
 
+Official website: https://magnesium.42web.io
+
 ### Summary
 Magnesium is a lightweight scripting language aimed for fast, simple, and full featured development. The language aims to run without the overhead of a traditional VM (virtual machine) or an AST (abstract syntax tree) to reduce overhead. The language aims to be simple, user friendly, and versatile. Magnesium has syntax elements combined from a veriety of the most loved programming languages. Syntax is a combination/fusion of different languages such as Python, Bash, Java, and Fortran (or at least in spirit). The language is still in its early alpha development stages so feel free to downloads or try it but we would like to warn you that there may be stability issues or paring errors.
 
