@@ -11,7 +11,7 @@ if len(sys.argv) < 1:
 print("Welcome to the Magnesium Packaging Program")
 print("Use this utility to package your Magnesium scripts into executable files.")
 print("-------------------------------------------------------------------------")
-print("PLEASE NOTE THAT THIS UTILITY NEEDS THE NIM COMPILER INSTALLED AND IN PATH ALONG WITH A STABLE NETWORK CONNECTION")
+print("PLEASE NOTE THAT THIS UTILITY NEEDS THE NIM COMPILER INSTALLED AND INCLUDED IN PATH ALONG WITH A STABLE NETWORK CONNECTION")
 print("")
 
 executable_path = os.getcwd()

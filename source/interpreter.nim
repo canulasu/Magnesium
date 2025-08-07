@@ -60,6 +60,8 @@ proc interpret*(codeContent: string): string =
             if oslib_imported == true:
                 statement = oslib.refresh(statement)
 
+            # start main eval checks
+
             if statement.startsWith("var "):
                 var name = statement.replace("var ", "").split("=")[0].strip()
                 var contents = statement.replace("var ", "").split("=")[1].strip()
@@ -88,7 +90,7 @@ proc interpret*(codeContent: string): string =
                 if vartype == "Float":
                     floats[name] = evaluate_float(contents)
 
-            if statement.startsWith("println(") and statement.endsWith(")"):
+            elif statement.startsWith("println(") and statement.endsWith(")"):
                 var parameters = statement.replace("println(", "").replace(")", "").strip()
 
                 var stringType = strings.contains(parameters)
@@ -118,7 +120,7 @@ proc interpret*(codeContent: string): string =
                     except:
                         echo parameters.replace("\"", "")
 
-            if statement.startsWith("exec(") and statement.endsWith(")"):
+            elif statement.startsWith("exec(") and statement.endsWith(")"):
                 var parameters = statement.replace("exec(", "").strip()[0 ..^ 2]
 
                 var stringType = strings.contains(parameters)
@@ -141,7 +143,7 @@ proc interpret*(codeContent: string): string =
                 except:
                     discard interpret(parserepl($(parameters.replace("\"", ""))))
                     
-            if statement.startsWith("function "):
+            elif statement.startsWith("function "):
                 var name = statement.strip().replace("function ", "").replace("()", "").replace("{", "").strip()
 
                 function_names[name] = functioncounter
@@ -175,7 +177,7 @@ proc interpret*(codeContent: string): string =
 
                 functioncounter += 1
 
-            if statement.startsWith("call "):
+            elif statement.startsWith("call "):
                 var name = statement.strip().replace("call ", "").replace("()", "").replace("{", "").strip()
 
                 try:
@@ -183,6 +185,20 @@ proc interpret*(codeContent: string): string =
                 except:
                     echo "Bloodstone: Error on line " & $(counter) & ". Function does not exist."
                     quit(1)
+
+            elif statement.startsWith("os."):
+                discard
+            elif statement.startsWith("time."):
+                discard
+
+            elif statement.startswith("//"):
+                discard
+            elif statement == "":
+                discard
+
+            else:
+                echo "Error: invalid command: " & statement
+                quit(1)
 
             if oslib_imported == true:
                 if statement.startsWith("os."):
