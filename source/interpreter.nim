@@ -7,11 +7,13 @@ import parser
 
 import stdlib/oslib
 import stdlib/timelib
+import stdlib/mathlib
 
 proc interpret*(codeContent: string): string =
 
     var oslib_imported = false
     var timelib_imported = false
+    var mathlib_imported = false
 
     var document = codeContent
     var libraries: seq[string] = @[]
@@ -22,6 +24,8 @@ proc interpret*(codeContent: string): string =
                 oslib_imported = true
             elif line.strip() == "include time":
                 timelib_imported = true
+            elif line.strip() == "include math":
+                mathlib_imported = true
             else:
                 document = readFile(line.replace("include ", "") & ".mg") & "\n" & document
                 libraries.add(line.replace("include ", "").strip())
@@ -59,6 +63,8 @@ proc interpret*(codeContent: string): string =
 
             if oslib_imported == true:
                 statement = oslib.refresh(statement)
+            if mathlib_imported == true:
+                statement = mathlib.refresh(statement)
 
             # start main eval checks
 
@@ -189,6 +195,11 @@ proc interpret*(codeContent: string): string =
             elif statement.startsWith("os."):
                 discard
             elif statement.startsWith("time."):
+                discard
+            elif statement.startsWith("math."):
+                discard
+                
+            elif statement.startswith("include "):
                 discard
 
             elif statement.startswith("//"):

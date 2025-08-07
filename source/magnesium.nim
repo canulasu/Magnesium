@@ -30,9 +30,12 @@ if paramCount() < 1:
 
         if repl.startsWith("var "):
             variables.add(repl)
+        if repl.startsWith("include "):
+            variables.add(repl)
 
-        elif repl.startsWith("exit "):
+        elif repl.startsWith("exit ") or repl.strip() == "exit":
             echo "Use exit() or Ctrl-Z to exit"
+            continue
 
         for item in variables:
             repl = variables.join(";") & ";" & repl
