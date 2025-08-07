@@ -9,7 +9,7 @@ if paramCount() < 1:
 
     echo "Magnesium Runtime 0.0.1 [Implemented using Nim-Lang 2.2.4]"
     echo "Copyright 2025 canulasu (canulasunal@proton.me)"
-    echo "Type \"help\" for more information"
+    echo "Type \"help\" or \"copyright\" for more information"
 
     var variables: seq[string] = @[]
 
@@ -23,6 +23,10 @@ if paramCount() < 1:
 
         if repl.strip() == "help":
             discard helpmode()
+
+        if repl.strip() == "copyright":
+            echo "Copyright (c) 2025 canulasu."
+            echo "All rights reserved."
 
         if repl.startsWith("var "):
             variables.add(repl)
