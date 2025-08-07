@@ -16,6 +16,9 @@ proc helpmode*(): int =
         var prompt = readLine(stdin).strip()
 
         if prompt == "exit":
+
+            echo "You are now exiting the help utility to the Magnesium Language live runtime environment."
+
             break
 
         elif prompt == "println":
