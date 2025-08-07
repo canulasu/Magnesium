@@ -1,4 +1,4 @@
-# Magnesium
+# Magnesium™
 
 Official website: https://magnesium.42web.io
 
@@ -29,3 +29,11 @@ We do not currently provide pre compiled packages for Magnesium, so you will nee
 ##### For the Magpack packaging tool
 - Python3 (Version 3.12+ is recommended but versions 3.9+ will most likely work.) -> [Link](https://python.org)
 - Pyinstaller -> [Link](https://pyinstaller.org)
+
+The following names are unregistered trademarks for canulasu.
+- Magnesium™ 
+- Magnesium Language™
+- Magnesium Scripting™
+- .mg™
+These marks are used to identify the official software and materials developed by canulasu.
+Unauthorized use that may casue confusion of imply affiliation is not permitted.
