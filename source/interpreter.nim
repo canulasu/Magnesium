@@ -2,8 +2,10 @@ import std/strutils
 import tables
 import typelib
 import os
-import inteval
 import parser
+
+import eval/inteval
+import eval/ifeval
 
 import stdlib/oslib
 import stdlib/timelib
@@ -35,6 +37,13 @@ proc interpret*(codeContent: string): string =
     var function_names: Table[string, int]
 
     var functioncounter = 0
+
+    ########################################################
+
+    var ifs: seq[string] = @[]
+    var if_names: Table[string, int]
+
+    var ifcounter = 0
 
     var strings: Table[string, string]
     var ints: Table[string, int]
@@ -183,6 +192,46 @@ proc interpret*(codeContent: string): string =
 
                 functioncounter += 1
 
+
+            elif statement.startsWith("if "):
+                var name = statement.strip().replace("function ", "").replace("()", "").replace("{", "").strip()
+
+                if_names[name] = ifcounter
+
+                var index = code.find(statement)
+                var ifcontent: seq[string] = @[]
+
+                if oslib_imported == true:
+                    ifcontent.add("include os")
+                if timelib_imported == true:
+                    ifcontent.add("include time")
+
+                for item in libraries:
+                    ifcontent.add("include " & item)
+
+                for i in index + 1 ..< code.len:
+
+                    var line = code[i]
+
+                    var check = line.replace(":*#$?!>-+ ", "").strip()
+
+                    if  "}" in check.strip().split():
+                        break
+                    if check.strip() == "{":
+                        discard
+                    else:
+                        ifcontent.add(check)
+                        forbidden.add(i)
+
+                ifs.add(ifcontent.join("\n"))
+
+                ifcounter += 1
+
+                if check(name) == true:
+                    discard interpret(ifs[if_names[name]])
+                else:
+                    discard
+
             elif statement.startsWith("call "):
                 var name = statement.strip().replace("call ", "").replace("()", "").replace("{", "").strip()
 
@@ -203,6 +252,8 @@ proc interpret*(codeContent: string): string =
                 discard
 
             elif statement.startswith("//"):
+                discard
+            elif "}" in statement:
                 discard
             elif statement == "":
                 discard
