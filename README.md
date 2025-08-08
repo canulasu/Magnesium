@@ -35,5 +35,7 @@ The following names are unregistered trademarks for canulasu.
 - Magnesium Language™
 - Magnesium Scripting™
 - .mg™
+- Magpack™
+
 These marks are used to identify the official software and materials developed by canulasu.
 Unauthorized use that may casue confusion of imply affiliation is not permitted.
