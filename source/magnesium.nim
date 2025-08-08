@@ -46,7 +46,7 @@ if paramCount() < 1:
 let command = paramStr(1)
 
 if command == "--version" or command == "-V":
-    echo "Magnesium Runtime Version 0.0.1"
+    echo "Magnesium Runtime Version " & version()
     echo "Copyright (c) 2025 canulasu"
     echo ""
     echo "Released under Apache License Version 2.0"
