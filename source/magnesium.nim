@@ -4,10 +4,11 @@ import std/strutils
 import interpreter
 import terminal
 import help
+import version
 
 if paramCount() < 1:
 
-    echo "Magnesium Runtime 0.0.1 [Implemented using Nim-Lang 2.2.4]"
+    echo "Magnesium Runtime " & version() & " [Implemented using Nim-Lang 2.2.4]"
     echo "Copyright 2025 canulasu (canulasunal@proton.me)"
     echo "Type \"help\" or \"copyright\" for more information"
 
