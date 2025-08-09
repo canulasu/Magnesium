@@ -19,5 +19,6 @@ proc refresh*(command: string): string =
     var updated = command
 
     updated = updated.replace("os.path()", os.getCurrentDir())
+    updated = updated.replace("~", os.getHomeDir())
 
     return updated

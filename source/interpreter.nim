@@ -137,17 +137,31 @@ proc interpret*(codeContent: string): string =
 
                 globals.add(statement)
 
-            elif statement.startsWith("println(") and statement.endsWith(")"):
-                var parameters = statement.replace("println(", "").replace(")", "").strip()
+            elif statement.startsWith("print"):
+                var newline = false
+
+                if statement.startsWith("println(") and statement.endsWith(")"):
+                    newline = true
+                
+                elif statement.startsWith("print(") and statement.endsWith(")"):
+                    newline = false
+
+                var parameters = statement.replace("println(", "").replace("print(", "").replace(")", "").strip()
 
                 var stringType = strings.contains(parameters)
                 var intType = ints.contains(parameters)
 
                 if stringType == true:
-                    echo strings[parameters]
+                    if newline == true:
+                        echo strings[parameters]
+                    else:
+                        stdout.write(strings[parameters])
 
                 elif intType == true:
-                    echo ints[parameters]
+                    if newline == true:
+                        echo strings[parameters]
+                    else:
+                        stdout.write(ints[parameters])
 
                 else:
                     for item in ints.keys:
@@ -163,9 +177,17 @@ proc interpret*(codeContent: string): string =
                         parameters = parameters.replace(modifier, $(floats[item]))
 
                     try:
-                        echo evaluate(parameters.replace("\"", ""))
+
+                        if newline == true:
+                            echo evaluate(parameters.replace("\"", ""))
+                        else:
+                            stdout.write(evaluate(parameters.replace("\"", "")))
+
                     except:
-                        echo parameters.replace("\"", "")
+                        if newline == true:
+                            echo parameters.replace("\"", "")
+                        else:
+                            stdout.write(parameters.replace("\"", ""))
 
             elif statement.startsWith("exec(") and statement.endsWith(")"):
                 var parameters = statement.replace("exec(", "").strip()[0 ..^ 2]

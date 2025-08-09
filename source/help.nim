@@ -26,7 +26,14 @@ proc helpmode*(): int =
             echo "Arguments: 1"
             echo "Usage: println(arguments)"
             echo "Accepts: Addition, variables, strings, integers, floats"
-            echo "Description: Prints a line to the console."
+            echo "Description: Prints a line to the console with newline."
+
+        elif prompt == "print":
+            echo "Function: print()"
+            echo "Arguments: 1"
+            echo "Usage: print(arguments)"
+            echo "Accepts: Addition, variables, strings, integers, floats"
+            echo "Description: Prints a line to the console without newline."
 
         elif prompt == "os.system":
             echo "Function: os.system()"
@@ -40,7 +47,14 @@ proc helpmode*(): int =
             echo "Arguments: 2"
             echo "Usage: var name = contents"
             echo "Accepts: Addition, variables, strings, integers, floats"
-            echo "Description: Used to local declare variables."
+            echo "Description: Used to declare local variables."
+
+        elif prompt == "global":
+            echo "Keyword: global"
+            echo "Arguments: 2"
+            echo "Usage: global name = contents"
+            echo "Accepts: Addition, variables, strings, integers, floats"
+            echo "Description: Used to declare global variables."
 
         elif prompt == "include":
             echo "Keyword: include"
