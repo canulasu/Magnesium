@@ -49,6 +49,8 @@ proc interpret*(codeContent: string): string =
     var ints: Table[string, int]
     var floats: Table[string, float]
 
+    var globals: seq[string] = @[]
+
     var code = document.split("\n")
 
     var counter = 0
@@ -104,6 +106,36 @@ proc interpret*(codeContent: string): string =
                     ints[name] = evaluate(contents)
                 if vartype == "Float":
                     floats[name] = evaluate_float(contents)
+
+            elif statement.startsWith("global "):
+                var name = statement.replace("global ", "").split("=")[0].strip()
+                var contents = statement.replace("global ", "").split("=")[1].strip()
+                var vartype = types(contents)
+
+                if contents.startswith("ask(") and contents.endsWith(")"):
+                    contents =contents.replace("\"", "").replace("ask(")[0 ..^ 2]
+                    stdout.write(contents)
+                    var value = readLine(stdin)
+                    strings[name] = value
+                    continue
+
+                for item in ints.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(ints[item]))
+
+                try:
+                    contents = $(evaluate(contents))
+                except:
+                    discard
+
+                if vartype == "String":
+                    strings[name] = contents.replace("\"", "")
+                if vartype == "Int":
+                    ints[name] = evaluate(contents)
+                if vartype == "Float":
+                    floats[name] = evaluate_float(contents)
+
+                globals.add(statement)
 
             elif statement.startsWith("println(") and statement.endsWith(")"):
                 var parameters = statement.replace("println(", "").replace(")", "").strip()
@@ -174,6 +206,9 @@ proc interpret*(codeContent: string): string =
                 for item in libraries:
                     functioncontent.add("include " & item)
 
+                for item in globals:
+                    functioncontent.add(item)
+
                 for i in index + 1 ..< code.len:
 
                     var line = code[i]
@@ -208,6 +243,9 @@ proc interpret*(codeContent: string): string =
 
                 for item in libraries:
                     ifcontent.add("include " & item)
+
+                for item in globals:
+                    ifcontent.add(item)
 
                 for i in index + 1 ..< code.len:
 
