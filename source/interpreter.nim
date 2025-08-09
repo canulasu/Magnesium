@@ -231,6 +231,18 @@ proc interpret*(codeContent: string): string =
             elif statement.startsWith("if "):
                 var name = statement.strip().replace("function ", "").replace("()", "").replace("{", "").strip()
 
+                for item in ints.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(ints[item]))
+
+                for item in strings.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(strings[item]))
+
+                for item in floats.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(floats[item]))
+
                 if_names[name] = ifcounter
 
                 var index = code.find(statement)
