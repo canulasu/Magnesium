@@ -42,6 +42,13 @@ proc helpmode*(): int =
             echo "Accepts: Addition, variables, strings, integers, floats"
             echo "Description: Runs a command on the system shell."
 
+        elif prompt == "time.sleep":
+            echo "Function: time.sleep()"
+            echo "Arguments: 1"
+            echo "Usage: time.sleep(seconds)"
+            echo "Accepts: Addition, variables, integers, floats"
+            echo "Description: Sleeps for the desired amount of seconds."
+
         elif prompt == "var":
             echo "Keyword: var"
             echo "Arguments: 2"

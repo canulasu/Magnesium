@@ -45,6 +45,11 @@ proc interpret*(codeContent: string): string =
 
     var ifcounter = 0
 
+    var whiles: seq[string] = @[]
+    var while_names: Table[string, int]
+
+    var whilecounter = 0
+
     var strings: Table[string, string]
     var ints: Table[string, int]
     var floats: Table[string, float]
@@ -251,7 +256,7 @@ proc interpret*(codeContent: string): string =
 
 
             elif statement.startsWith("if "):
-                var name = statement.strip().replace("function ", "").replace("()", "").replace("{", "").strip()
+                var name = statement.strip().replace("if ", "").replace("()", "").replace("{", "").strip()
 
                 for item in ints.keys:
                     var modifier = "$"&item
@@ -303,6 +308,61 @@ proc interpret*(codeContent: string): string =
                     discard interpret(ifs[if_names[name]])
                 else:
                     discard
+
+            elif statement.startsWith("while "):
+                var name = statement.strip().replace("while ", "").replace("()", "").replace("{", "").strip()
+
+                for item in ints.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(ints[item]))
+
+                for item in strings.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(strings[item]))
+
+                for item in floats.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(floats[item]))
+
+                while_names[name] = whilecounter
+
+                var index = code.find(statement)
+                var whilecontent: seq[string] = @[]
+
+                if oslib_imported == true:
+                    whilecontent.add("include os")
+                if timelib_imported == true:
+                    whilecontent.add("include time")
+
+                for item in libraries:
+                    whilecontent.add("include " & item)
+
+                for item in globals:
+                    whilecontent.add(item)
+
+                for i in index + 1 ..< code.len:
+
+                    var line = code[i]
+
+                    var check = line.replace(":*#$?!>-+ ", "").strip()
+
+                    if check.strip().startsWith("global "):
+                        globals.add(check.strip())
+
+                    if  "}" in check.strip().split():
+                        break
+                    if check.strip() == "{":
+                        discard
+                    else:
+                        whilecontent.add(check)
+                        forbidden.add(i)
+
+                whiles.add(whilecontent.join("\n"))
+
+                whilecounter += 1
+
+                while check(name) == false:
+                    discard interpret(whiles[while_names[name]])
 
             elif statement.startsWith("call "):
                 var name = statement.strip().replace("call ", "").replace("()", "").replace("{", "").strip()

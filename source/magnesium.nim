@@ -16,7 +16,7 @@ if paramCount() < 1:
 
     while true:
 
-        setForegroundColor(fgRed)
+        setForegroundColor(fgGreen)
         stdout.write(">>> ")
         resetAttributes()
 
@@ -56,6 +56,8 @@ else:
     let filename = paramStr(1)
 
     if filename.endsWith(".mg"):
+        discard
+    elif filename.endsWith(".magnesium"):
         discard
     else:
         echo "E: Incorrect file extension. Magnesium files need to end with .mg"
