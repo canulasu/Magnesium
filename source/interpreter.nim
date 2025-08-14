@@ -12,6 +12,8 @@ import stdlib/oslib
 import stdlib/timelib
 import stdlib/mathlib
 
+import engines/rengine
+
 proc interpret*(codeContent: string): string =
 
     var oslib_imported = false
@@ -52,7 +54,6 @@ proc interpret*(codeContent: string): string =
     var whilecounter = 0
 
     var strings: Table[string, string]
-    var ints: Table[string, int]
     var floats: Table[string, float]
 
     var globals: seq[string] = @[]
@@ -90,21 +91,21 @@ proc interpret*(codeContent: string): string =
                 var contents = statement.replace("var ", "").split("=")[1].strip()
                 var vartype = types(contents)
 
-                if contents.startswith("prompt(") and contents.endsWith(")"):
-                    contents =contents.replace("\"", "").replace("prompt(")[0 ..^ 2]
-                    stdout.write(contents)
-                    var value = readLine(stdin)
-                    strings[name] = value
-                    continue
+                if "prompt(" in contents:
+                    var prompts = find_arguments(contents, "prompt(", ")")
+
+                    for item in prompts:
+                        var parsedItem = item.replace("\"", "")
+
+                        stdout.write(parsedItem)
+                        var question = readLine(stdin)
+
+                        contents = contents.replace("prompt("&item&")", question)
 
                 if contents.startswith("length(") and contents.endsWith(")"):
                     contents =contents.replace("\"", "").replace("length(")[0 ..^ 2]
-                    ints[name] = length.length(contents, counter)
+                    floats[name] = length.length(contents, counter)
                     continue
-
-                for item in ints.keys:
-                    var modifier = "$"&item
-                    contents = contents.replace(modifier, $(ints[item]))
 
                 for item in strings.keys:
                     var modifier = "$"&item
@@ -121,10 +122,8 @@ proc interpret*(codeContent: string): string =
 
                 if vartype == "String":
                     strings[name] = contents.replace("\"", "")
-                if vartype == "Int":
-                    ints[name] = evaluate(contents)
-                if vartype == "Float":
-                    floats[name] = evaluate_float(contents)
+                else:
+                    floats[name] = evaluate(contents)
 
             elif statement.startsWith("global "):
                 var name = statement.replace("global ", "").split("=")[0].strip()
@@ -140,12 +139,8 @@ proc interpret*(codeContent: string): string =
 
                 if contents.startswith("length(") and contents.endsWith(")"):
                     contents =contents.replace("\"", "").replace("length(")[0 ..^ 2]
-                    ints[name] = length.length(contents, counter)
+                    floats[name] = length.length(contents, counter)
                     continue
-
-                for item in ints.keys:
-                    var modifier = "$"&item
-                    contents = contents.replace(modifier, $(ints[item]))
 
                 for item in strings.keys:
                     var modifier = "$"&item
@@ -162,10 +157,8 @@ proc interpret*(codeContent: string): string =
 
                 if vartype == "String":
                     strings[name] = contents.replace("\"", "")
-                if vartype == "Int":
-                    ints[name] = evaluate(contents)
-                if vartype == "Float":
-                    floats[name] = evaluate_float(contents)
+                else:
+                    floats[name] = evaluate(contents)
 
                 globals.add(statement)
 
@@ -180,56 +173,29 @@ proc interpret*(codeContent: string): string =
 
                 var parameters = statement.replace("println(", "").replace("print(", "").replace(")", "").strip()
 
-                var stringType = strings.contains(parameters)
-                var intType = ints.contains(parameters)
+                for item in strings.keys:
+                    var modifier = "$"&item
+                    parameters = parameters.replace(modifier, $(strings[item]))
 
-                if stringType == true:
+                for item in floats.keys:
+                    var modifier = "$"&item
+                    parameters = parameters.replace(modifier, $(floats[item]))
+
+                try:
+
                     if newline == true:
-                        echo strings[parameters]
+                        echo evaluate(parameters.replace("\"", ""))
                     else:
-                        stdout.write(strings[parameters])
+                        stdout.write(evaluate(parameters.replace("\"", "")))
 
-                elif intType == true:
+                except:
                     if newline == true:
-                        echo strings[parameters]
+                        echo parameters.replace("\"", "")
                     else:
-                        stdout.write(ints[parameters])
-
-                else:
-                    for item in ints.keys:
-                        var modifier = "$"&item
-                        parameters = parameters.replace(modifier, $(ints[item]))
-
-                    for item in strings.keys:
-                        var modifier = "$"&item
-                        parameters = parameters.replace(modifier, $(strings[item]))
-
-                    for item in floats.keys:
-                        var modifier = "$"&item
-                        parameters = parameters.replace(modifier, $(floats[item]))
-
-                    try:
-
-                        if newline == true:
-                            echo evaluate(parameters.replace("\"", ""))
-                        else:
-                            stdout.write(evaluate(parameters.replace("\"", "")))
-
-                    except:
-                        if newline == true:
-                            echo parameters.replace("\"", "")
-                        else:
-                            stdout.write(parameters.replace("\"", ""))
+                        stdout.write(parameters.replace("\"", ""))
 
             elif statement.startsWith("exec(") and statement.endsWith(")"):
                 var parameters = statement.replace("exec(", "").strip()[0 ..^ 2]
-
-                var stringType = strings.contains(parameters)
-                var intType = ints.contains(parameters)
-
-                for item in ints.keys:
-                    var modifier = "$"&item
-                    parameters = parameters.replace(modifier, $(ints[item]))
 
                 for item in strings.keys:
                     var modifier = "$"&item
@@ -285,10 +251,6 @@ proc interpret*(codeContent: string): string =
             elif statement.startsWith("if "):
                 var name = statement.strip().replace("if ", "").replace("()", "").replace("{", "").strip()
 
-                for item in ints.keys:
-                    var modifier = "$"&item
-                    name = name.replace(modifier, $(ints[item]))
-
                 for item in strings.keys:
                     var modifier = "$"&item
                     name = name.replace(modifier, $(strings[item]))
@@ -338,10 +300,6 @@ proc interpret*(codeContent: string): string =
 
             elif statement.startsWith("while "):
                 var name = statement.strip().replace("while ", "").replace("()", "").replace("{", "").strip()
-
-                for item in ints.keys:
-                    var modifier = "$"&item
-                    name = name.replace(modifier, $(ints[item]))
 
                 for item in strings.keys:
                     var modifier = "$"&item
@@ -425,10 +383,6 @@ proc interpret*(codeContent: string): string =
                 if statement.startsWith("os."):
                     var functionName = statement.replace("os.", "")
 
-                    for item in ints.keys:
-                        var modifier = "$"&item
-                        functionName = functionName.replace(modifier, $(ints[item]))
-
                     for item in strings.keys:
                         var modifier = "$"&item
                         functionName = functionName.replace(modifier, $(strings[item]))
@@ -444,10 +398,6 @@ proc interpret*(codeContent: string): string =
             if timelib_imported == true:
                 if statement.startsWith("time."):
                     var functionName = statement.replace("time.", "")
-
-                    for item in ints.keys:
-                        var modifier = "$"&item
-                        functionName = functionName.replace(modifier, $(ints[item]))
 
                     for item in strings.keys:
                         var modifier = "$"&item

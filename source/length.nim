@@ -1,12 +1,12 @@
 import std/strutils
 
-proc length*(command: string, line: int): int =
+proc length*(command: string, line: int): float =
     try:
         discard parseInt(command)
         discard parseFloat(command)
         echo "Magnesium: Error on line " & $(line) & ". " & command & " does not support the len() function due to type errors."
         quit(1)
     except:
-        return len(command)
+        return float(len(command))
 
     return 0

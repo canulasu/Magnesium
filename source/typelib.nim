@@ -6,7 +6,7 @@ proc types*(contentsx: string): string =
 
     try:
         discard parseInt(contents.strip())
-        return "Int"
+        return "Float"
     except:
         discard
 
