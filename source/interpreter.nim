@@ -3,6 +3,7 @@ import tables
 import typelib
 import os
 import parser
+import length
 
 import eval/inteval
 import eval/ifeval
@@ -89,16 +90,29 @@ proc interpret*(codeContent: string): string =
                 var contents = statement.replace("var ", "").split("=")[1].strip()
                 var vartype = types(contents)
 
-                if contents.startswith("ask(") and contents.endsWith(")"):
-                    contents =contents.replace("\"", "").replace("ask(")[0 ..^ 2]
+                if contents.startswith("prompt(") and contents.endsWith(")"):
+                    contents =contents.replace("\"", "").replace("prompt(")[0 ..^ 2]
                     stdout.write(contents)
                     var value = readLine(stdin)
                     strings[name] = value
                     continue
 
+                if contents.startswith("length(") and contents.endsWith(")"):
+                    contents =contents.replace("\"", "").replace("length(")[0 ..^ 2]
+                    ints[name] = length.length(contents, counter)
+                    continue
+
                 for item in ints.keys:
                     var modifier = "$"&item
                     contents = contents.replace(modifier, $(ints[item]))
+
+                for item in strings.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(strings[item]))
+
+                for item in floats.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(floats[item]))
 
                 try:
                     contents = $(evaluate(contents))
@@ -117,16 +131,29 @@ proc interpret*(codeContent: string): string =
                 var contents = statement.replace("global ", "").split("=")[1].strip()
                 var vartype = types(contents)
 
-                if contents.startswith("ask(") and contents.endsWith(")"):
-                    contents =contents.replace("\"", "").replace("ask(")[0 ..^ 2]
+                if contents.startswith("prompt(") and contents.endsWith(")"):
+                    contents =contents.replace("\"", "").replace("prompt(")[0 ..^ 2]
                     stdout.write(contents)
                     var value = readLine(stdin)
                     strings[name] = value
                     continue
 
+                if contents.startswith("length(") and contents.endsWith(")"):
+                    contents =contents.replace("\"", "").replace("length(")[0 ..^ 2]
+                    ints[name] = length.length(contents, counter)
+                    continue
+
                 for item in ints.keys:
                     var modifier = "$"&item
                     contents = contents.replace(modifier, $(ints[item]))
+
+                for item in strings.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(strings[item]))
+
+                for item in floats.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(floats[item]))
 
                 try:
                     contents = $(evaluate(contents))
@@ -370,7 +397,7 @@ proc interpret*(codeContent: string): string =
                 try:
                     discard interpret(functions[function_names[name]])
                 except:
-                    echo "Bloodstone: Error on line " & $(counter) & ". Function does not exist."
+                    echo "Magnesium: Error on line " & $(counter) & ". Function does not exist."
                     quit(1)
 
             elif statement.startsWith("os."):
