@@ -1,5 +1,6 @@
 # Magnesium™
 
+Visit us online!
 Official website: https://magnesium.42web.io
 
 ### Summary
