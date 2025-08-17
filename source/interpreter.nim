@@ -55,6 +55,7 @@ proc interpret*(codeContent: string): string =
 
     var strings: Table[string, string]
     var floats: Table[string, float]
+    var lists: Table[string, string]
 
     var globals: seq[string] = @[]
 
@@ -125,6 +126,26 @@ proc interpret*(codeContent: string): string =
                 else:
                     floats[name] = evaluate(contents)
 
+            elif statement.startsWith("list "):
+                var parsed = statement.replace("list ", "")
+                var expression = parsed.split("=")
+                
+                for x in 0..len(expression)-1:
+                    expression[x] = expression[x].strip()
+
+                var name = expression[0]
+                var contents = expression[1]
+
+                var list = contents.replace("[", "").replace("]", "").split(",")
+
+                for x in 0..len(list)-1:
+                    list[x] = list[x].strip()
+
+                for x in 0..len(list)-1:
+                    var counter = $(x)
+                    var iterName = name&"["&counter&"]"
+                    lists[iterName] = list[x]
+
             elif statement.startsWith("global "):
                 var name = statement.replace("global ", "").split("=")[0].strip()
                 var contents = statement.replace("global ", "").split("=")[1].strip()
@@ -149,6 +170,10 @@ proc interpret*(codeContent: string): string =
                 for item in floats.keys:
                     var modifier = "$"&item
                     contents = contents.replace(modifier, $(floats[item]))
+
+                for item in lists.keys:
+                    var modifier = "$"&item
+                    contents = contents.replace(modifier, $(lists[item]))
 
                 try:
                     contents = $(evaluate(contents))
@@ -181,6 +206,10 @@ proc interpret*(codeContent: string): string =
                     var modifier = "$"&item
                     parameters = parameters.replace(modifier, $(floats[item]))
 
+                for item in lists.keys:
+                    var modifier = "$"&item
+                    parameters = parameters.replace(modifier, $(lists[item]))
+
                 try:
 
                     if newline == true:
@@ -204,6 +233,10 @@ proc interpret*(codeContent: string): string =
                 for item in floats.keys:
                     var modifier = "$"&item
                     parameters = parameters.replace(modifier, $(floats[item]))
+
+                for item in lists.keys:
+                    var modifier = "$"&item
+                    parameters = parameters.replace(modifier, $(lists[item]))
 
                 try:
                     discard interpret(parserepl($(evaluate(parameters.replace("\"", "")))))
@@ -259,6 +292,10 @@ proc interpret*(codeContent: string): string =
                     var modifier = "$"&item
                     name = name.replace(modifier, $(floats[item]))
 
+                for item in lists.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(lists[item]))
+
                 if_names[name] = ifcounter
 
                 var index = code.find(statement)
@@ -308,6 +345,10 @@ proc interpret*(codeContent: string): string =
                 for item in floats.keys:
                     var modifier = "$"&item
                     name = name.replace(modifier, $(floats[item]))
+
+                for item in lists.keys:
+                    var modifier = "$"&item
+                    name = name.replace(modifier, $(lists[item]))
 
                 while_names[name] = whilecounter
 
@@ -374,6 +415,8 @@ proc interpret*(codeContent: string): string =
                 discard
             elif statement == "":
                 discard
+            elif statement == "exit()":
+                quit(1)
 
             else:
                 echo "Error: invalid command: " & statement
@@ -391,6 +434,10 @@ proc interpret*(codeContent: string): string =
                         var modifier = "$"&item
                         functionName = functionName.replace(modifier, $(floats[item]))
 
+                    for item in lists.keys:
+                        var modifier = "$"&item
+                        functionName = functionName.replace(modifier, $(lists[item]))
+
                     functionName = functionName.replace("\"", "")
 
                     discard oslib.runtime(functionName)
@@ -406,6 +453,10 @@ proc interpret*(codeContent: string): string =
                     for item in floats.keys:
                         var modifier = "$"&item
                         functionName = functionName.replace(modifier, $(floats[item]))
+
+                    for item in lists.keys:
+                        var modifier = "$"&item
+                        functionName = functionName.replace(modifier, $(lists[item]))
 
                     functionName = functionName.replace("\"", "")
 

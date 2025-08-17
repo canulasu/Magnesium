@@ -3,7 +3,16 @@ import std/strutils
 
 proc runtime*(command: string): string =
     if command.startsWith("system(") and command.endsWith(")"):
-        discard os.execShellCmd(command.replace("system(", "").replace(")", "").strip())
+        when defined(windows):
+            discard os.execShellCmd("powershell -Command " & command.replace("system(", "").replace(")", "").strip())
+        else:
+            discard os.execShellCmd(command.replace("system(", "").replace(")", "").strip())
+
+    if command.startsWith("chdir(") and command.endsWith(")"):
+        try:
+            os.setCurrentDir(command.replace("chdir(", "").replace(")", "").strip())
+        except:
+            echo "Magnesium: Error! Could not change to specified directory because it does not exist."
 
     elif command.startsWith("new(") and command.endsWith(")"):
         writeFile(command.replace("new(", "").replace(")", "").strip(), "")

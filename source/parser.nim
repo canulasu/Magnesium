@@ -57,7 +57,7 @@ proc parserepl*(documentx: string): string =
     try:
 
         var document = documentx.replace("\t", "")
-        document = document.replace(";", "#semicolon#")
+        document = document.replace(";", "#semicolon#").replace("0", "#zerochar#")
 
         var parsed: seq[string] = @[]
         var finished: seq[string] = @[]
@@ -96,7 +96,7 @@ proc parserepl*(documentx: string): string =
             final = repeat(":*#$?!>-+ ", indent) & command.replace("#indent#", "").replace(command.split("#indent#")[0], "")
             toreturn.add(final)
 
-        return toreturn.join("\n")
+        return toreturn.join("\n").replace("#zerochar#", "0")
 
     except:
         echo "E: File does not exist"

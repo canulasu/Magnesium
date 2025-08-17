@@ -3,12 +3,16 @@ import zipfile
 import os
 import shutil
 import sys
-import subprocess
+import platform
 
 if len(sys.argv) < 1:
     exit()
 
 print("Welcome to the Magnesium Packaging Program")
+print("")
+print("Copyright (c) 2025 canulasu")
+print("All rights reserved.")
+print("")
 print("Use this utility to package your Magnesium scripts into executable files.")
 print("-------------------------------------------------------------------------")
 print("PLEASE NOTE THAT THIS UTILITY NEEDS THE NIM COMPILER INSTALLED AND INCLUDED IN PATH ALONG WITH A STABLE NETWORK CONNECTION")
@@ -65,6 +69,13 @@ print("Payload injected.")
 print("Compiling source with magnesium")
 
 os.system(f"nim c {sys.argv[1].replace(".mg", ".nim")}")
-shutil.move(sys.argv[1].replace(".mg", ""), executable_path)
+
+if platform.system() == "Windows":
+    shutil.move(sys.argv[1].replace(".mg", "")+".exe", executable_path)
+else:
+    shutil.move(sys.argv[1].replace(".mg", ""), executable_path)
+
+os.chdir(executable_path)
+shutil.rmtree("Build")
 
 print("Done")

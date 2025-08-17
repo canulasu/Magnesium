@@ -31,7 +31,11 @@ if paramCount() < 1:
 
         if repl.startsWith("var "):
             variables.add(repl)
+        if repl.startsWith("list "):
+            variables.add(repl)
         if repl.startsWith("include "):
+            variables.add(repl)
+        if repl.startsWith("os.chdir("):
             variables.add(repl)
 
         elif repl.startsWith("exit ") or repl.strip() == "exit":
